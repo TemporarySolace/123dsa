@@ -12,19 +12,21 @@ This repository contains a complete setup for a Kubernetes-based microservices a
 
 # Architecture
 ---
+
 ```mermaid
 graph TD
-  A[External User] --> B{Istio Gateway (main-gateway)}
-  B --> C[/producer producer-svc port 5000]
-  B --> D[/consumer consumer-svc port 5001]
-  B --> E[/grafana grafana-svc port 3000]
-  B --> F[/prometheus prom-svc port 9090]
-  B --> G[/rabbitmq rabbitmq-ui port 15672]
-  B --> H[/kiali kiali-svc port 20001]
-  C --> I[RabbitMQ Broker rabbitmq svc:5672]
-  D --> I
+    A[External User] --> B[Istio Gateway main-gateway]
+    B --> C[/producer\nproducer-svc\nport 5000/]
+    B --> D[/consumer\nconsumer-svc\nport 5001/]
+    B --> E[/grafana\ngrafana-svc\nport 3000/]
+    B --> F[/prometheus\nprom-svc\nport 9090/]
+    B --> G[/rabbitmq\nrabbitmq-ui\nport 15672/]
+    B --> H[/kiali\nkiali-svc\nport 20001/]
+    C --> I[RabbitMQ Broker\nrabbitmq svc:5672]
+    D --> I
 ```
-```
+
+
 
 ## Prerequisites
 
