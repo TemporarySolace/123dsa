@@ -64,6 +64,7 @@ fi
 # Run install-all.sh if available
 if [ -f ./scripts/install-all.sh ]; then
   ./scripts/install-all.sh || error_exit "install-all.sh execution failed."
+  
   status "install-all.sh executed successfully."
 else
   error_exit "scripts/install-all.sh not found."

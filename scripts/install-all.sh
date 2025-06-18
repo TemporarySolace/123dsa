@@ -28,11 +28,13 @@ helm install istio-base istio/base -n istio-system --create-namespace
 helm install istiod istio/istiod -n istio-system
 helm install main-gateway istio/gateway -n istio-system
 
+
 # Step 5: Install RabbitMQ with FQDN support
 echo "Installing RabbitMQ..."
 helm install rabbitmq bitnami/rabbitmq \
   -n rabbitmq --create-namespace \
   -f "$PROJECT_ROOT/charts/rabbitmq/values.yaml"
+kubectl label namespace rabbitmq istio-injection=enabled --overwrite
 
 # Step 6: Wait for RabbitMQ and queue creation job
 echo "Waiting for RabbitMQ pod and task_queue job to complete..."
@@ -54,6 +56,8 @@ helm upgrade --install monitoring "$PROJECT_ROOT/charts/monitoring" -n istio-sys
 # Step 9: Deploy application services
 helm upgrade --install producer "$PROJECT_ROOT/charts/producer" -n producer --create-namespace
 helm upgrade --install consumer "$PROJECT_ROOT/charts/consumer" -n consumer --create-namespace
+kubectl label namespace producer istio-injection=enabled --overwrite
+kubectl label namespace consumer istio-injection=enabled --overwrite
 
 # Step 10: Wait for all pods to be ready
 echo "Waiting for pods to be ready..."
@@ -87,6 +91,7 @@ kubectl port-forward -n istio-system svc/istio-ingressgateway 8080:80 &
 # Step 15: Run RabbitMQ E2E test
 echo "Running RabbitMQ end-to-end test..."
 helm install rabbitmq-test "$PROJECT_ROOT/charts/test" -n test --create-namespace
+kubectl label namespace test istio-injection=enabled --overwrite
 
 kubectl wait --for=condition=complete job/rabbitmq-e2e-test -n test --timeout=60s
 
