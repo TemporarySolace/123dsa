@@ -1,0 +1,35 @@
+replicaCount: 1
+
+image:
+  repository: rabbitmq
+  tag: 3-management
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 5672
+  managementPort: 15672
+
+persistence:
+  enabled: true
+  storageClass: ""
+  accessMode: ReadWriteOnce
+  size: 1Gi
+
+resources:
+  requests:
+    memory: "256Mi"
+    cpu: "100m"
+  limits:
+    memory: "512Mi"
+    cpu: "200m"
+
+nodeSelector: {}
+tolerations: []
+
+affinity: {}
+auth:
+  username: user
+  password: bitnami
+
+extraPlugins: "rabbitmq_management"

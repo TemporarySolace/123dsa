@@ -1,0 +1,39 @@
+prometheus:
+  service:
+    type: ClusterIP
+    port: 9090
+  serviceMonitor:
+    enabled: true
+
+grafana:
+  adminPassword: "admin"
+  service:
+    type: ClusterIP
+    port: 3000
+  datasources:
+    datasources.yaml:
+      apiVersion: 1
+      datasources:
+        - name: Prometheus
+          type: prometheus
+          url: http://prometheus-server.istio-system.svc.cluster.local
+          access: proxy
+          isDefault: true
+  dashboardProviders:
+    dashboardproviders.yaml:
+      apiVersion: 1
+      providers:
+        - name: 'istio'
+          orgId: 1
+          folder: 'Istio'
+          type: file
+          disableDeletion: false
+          updateIntervalSeconds: 10
+          options:
+            path: /var/lib/grafana/dashboards/istio
+  dashboards:
+    istio:
+      istio-mesh:
+        gnetId: 7639
+        revision: 1
+        datasource: Prometheus

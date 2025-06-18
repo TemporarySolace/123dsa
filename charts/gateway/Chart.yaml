@@ -1,0 +1,4 @@
+apiVersion: v2
+name: gateway
+description: Istio Gateway Helm chart
+version: 0.1.0
