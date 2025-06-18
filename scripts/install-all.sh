@@ -34,7 +34,12 @@ helm install rabbitmq bitnami/rabbitmq \
   -n rabbitmq --create-namespace \
   -f "$PROJECT_ROOT/charts/rabbitmq/values.yaml"
 
-# Step 6: Install Prometheus and Grafana
+# Step 6: Wait for RabbitMQ and queue creation job
+echo "Waiting for RabbitMQ pod and task_queue job to complete..."
+kubectl wait --for=condition=Ready pod -l app.kubernetes.io/name=rabbitmq -n rabbitmq --timeout=180s
+kubectl wait --for=condition=complete job/create-task-queue -n rabbitmq --timeout=60s
+
+# Step 7: Install Prometheus and Grafana
 helm install prometheus prometheus-community/prometheus \
   -f "$PROJECT_ROOT/monitoring/prometheus/values.yaml" \
   -n istio-system --create-namespace
@@ -43,18 +48,18 @@ helm install grafana grafana/grafana \
   -f "$PROJECT_ROOT/monitoring/grafana/values.yaml" \
   -n istio-system --create-namespace
 
-# Step 7: Deploy dashboards and telemetry config
+# Step 8: Deploy dashboards and telemetry config
 helm upgrade --install monitoring "$PROJECT_ROOT/charts/monitoring" -n istio-system
 
-# Step 8: Deploy application services
+# Step 9: Deploy application services
 helm upgrade --install producer "$PROJECT_ROOT/charts/producer" -n producer --create-namespace
 helm upgrade --install consumer "$PROJECT_ROOT/charts/consumer" -n consumer --create-namespace
 
-# Step 9: Wait for all pods to be ready
+# Step 10: Wait for all pods to be ready
 echo "Waiting for pods to be ready..."
 kubectl wait --for=condition=Ready pods --all --all-namespaces --timeout=300s
 
-# Step 10: Build and load Docker images
+# Step 11: Build and load Docker images
 echo "Building Docker images..."
 docker build -t producer:latest "$PROJECT_ROOT/producer"
 docker build -t consumer:latest "$PROJECT_ROOT/consumer"
@@ -63,10 +68,10 @@ echo "Loading images into Kind..."
 kind load docker-image producer:latest --name test
 kind load docker-image consumer:latest --name test
 
-# Step 11: Apply VirtualServices
+# Step 12: Apply VirtualServices
 kubectl apply -f "$PROJECT_ROOT/istio/virtualservices.yaml"
 
-# Step 12: Install Kiali
+# Step 13: Install Kiali
 helm install kiali-server kiali/kiali-server \
   --namespace istio-system \
   --set auth.strategy="anonymous"
@@ -76,10 +81,10 @@ if [ -d "$PROJECT_ROOT/charts/istio" ]; then
   helm upgrade --install istio "$PROJECT_ROOT/charts/istio" -n istio-system
 fi
 
-# Step 13: Port forward gateway (optional for localhost access)
+# Step 14: Port forward gateway (optional for localhost access)
 kubectl port-forward -n istio-system svc/istio-ingressgateway 8080:80 &
 
-# Step 14: Run RabbitMQ E2E test
+# Step 15: Run RabbitMQ E2E test
 echo "Running RabbitMQ end-to-end test..."
 helm install rabbitmq-test "$PROJECT_ROOT/charts/test" -n test --create-namespace
 

@@ -1,0 +1,32 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: create-task-queue
+  namespace: rabbitmq
+  annotations:
+    "helm.sh/hook": post-install
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  template:
+    spec:
+      containers:
+        - name: create-queue
+          image: bitnami/rabbitmq:latest
+          command: ["/bin/bash", "-c"]
+          args:
+            - |
+              echo "Creating task_queue..."
+              rabbitmqadmin -u "$RABBITMQ_USERNAME" -p "$RABBITMQ_PASSWORD" \
+                -H rabbitmq -V / declare queue name=task_queue durable=true
+          env:
+            - name: RABBITMQ_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: rabbitmq
+                  key: rabbitmq-username
+            - name: RABBITMQ_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: rabbitmq
+                  key: rabbitmq-password
+      restartPolicy: OnFailure
