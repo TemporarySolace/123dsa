@@ -12,35 +12,19 @@ This repository contains a complete setup for a Kubernetes-based microservices a
 
 # Architecture
 ---
-
-                                      +-------------------+
-                                      |   External User   |
-                                      +---------+---------+
-                                                |
-                                                v
-                                       +--------+--------+
-                                       |   Istio Gateway  |
-                                       |  (main-gateway)  |
-                                       +--------+--------+
-                                                |
-  ----------------------------------------------------------------------------------------
-  |              |               |               |               |               |       |
-  v              v               v               v               v               v       v
-+---------------+ +-------------+ +-------------+ +-------------+ +-------------+ +-------------+
-|   /producer   | |  /consumer  | |   /grafana   | | /prometheus | |  /rabbitmq  | |   /kiali    |
-| producer-svc  | | consumer-svc| | grafana-svc | | prom-svc     | | rabbitmq-ui | | kiali-svc   |
-|   port 5000   | |  port 5001  | |  port 3000  | |  port 9090   | | port 15672  | | port 20001  |
-+---------------+ +-------------+ +-------------+ +-------------+ +-------------+ +-------------+
-       |                |                |               |               |               |
-       |                |                |               |               |               |
-       +----------------+----------------+---------------+---------------+---------------+
-                                                |
-                                                v
-                                      +---------------------+
-                                      |   RabbitMQ Broker   |
-                                      | rabbitmq svc:5672   |
-                                      +---------------------+
-
+```mermaid
+graph TD
+  A[External User] --> B{Istio Gateway (main-gateway)}
+  B --> C[/producer producer-svc port 5000]
+  B --> D[/consumer consumer-svc port 5001]
+  B --> E[/grafana grafana-svc port 3000]
+  B --> F[/prometheus prom-svc port 9090]
+  B --> G[/rabbitmq rabbitmq-ui port 15672]
+  B --> H[/kiali kiali-svc port 20001]
+  C --> I[RabbitMQ Broker rabbitmq svc:5672]
+  D --> I
+```
+```
 
 ## Prerequisites
 
