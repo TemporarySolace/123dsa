@@ -10,10 +10,7 @@ This repository contains a complete setup for a Kubernetes-based microservices a
 - Monitoring with Prometheus and Grafana.
 - Service mesh visualization with Kiali.
 
-#architecture 
----
-
-#architecture 
+# Architecture
 ---
 
                                       +-------------------+
@@ -26,9 +23,9 @@ This repository contains a complete setup for a Kubernetes-based microservices a
                                        |  (main-gateway)  |
                                        +--------+--------+
                                                 |
-  --------------------------------------------------------------------------------------------
-  |              |               |               |               |               |
-  v              v               v               v               v               v
+  ----------------------------------------------------------------------------------------
+  |              |               |               |               |               |       |
+  v              v               v               v               v               v       v
 +---------------+ +-------------+ +-------------+ +-------------+ +-------------+ +-------------+
 |   /producer   | |  /consumer  | |   /grafana   | | /prometheus | |  /rabbitmq  | |   /kiali    |
 | producer-svc  | | consumer-svc| | grafana-svc | | prom-svc     | | rabbitmq-ui | | kiali-svc   |
